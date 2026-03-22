@@ -10,6 +10,7 @@ import { Link } from 'react-router'
 import { useState, useTransition } from 'react'
 import type { Post } from '@synchro/shared'
 import { client } from '~/lib/api'
+import { formatUtcDateTime } from '~/lib/date'
 import { StatusBadge } from './posts.$id'
 import type { Route } from './+types/home'
 
@@ -205,7 +206,7 @@ function PostList() {
                     {post.body}
                   </p>
                   <small style={{ color: '#9ca3af' }}>
-                    {new Date(post.createdAt).toLocaleString()}
+                    {formatUtcDateTime(post.createdAt)} UTC
                   </small>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignSelf: 'flex-start' }}>

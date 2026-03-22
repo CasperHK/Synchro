@@ -4,6 +4,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import type { DehydratedState } from '@tanstack/react-query'
 import type { Post } from '@synchro/shared'
 import { client } from '~/lib/api'
+import { formatUtcDateTime } from '~/lib/date'
 import type { Route } from './+types/posts.$id'
 
 type LoaderData = { id: number; dehydratedState: DehydratedState }
@@ -89,7 +90,7 @@ function PostDetailView({ id }: { id: number }) {
           {post.body}
         </p>
         <small style={{ color: '#9ca3af' }}>
-          Published {new Date(post.createdAt).toLocaleString()}
+          Published {formatUtcDateTime(post.createdAt)} UTC
         </small>
       </article>
     </main>
