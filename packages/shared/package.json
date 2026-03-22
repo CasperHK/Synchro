@@ -1,0 +1,17 @@
+{
+  "name": "@synchro/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "main": "./src/index.ts",
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}
