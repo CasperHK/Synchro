@@ -25,7 +25,6 @@ await db.post.createMany({
       status: 'draft',
     },
   ],
-  skipDuplicates: true,
 })
 
 console.log('✅ Seeded 4 posts')
