@@ -1,5 +1,12 @@
-# 🚀 Synchro - Zero-Hallucination Fullstack Stack
-這是一個極致追求型別安全 (Type Safety) 的 Web 架構，專為 Cursor / Claude / Copilot 等 AI 工具設計。透過單一真相來源 (Single Source of Truth)，確保 AI 在生成前端代碼時，絕對無法脫離後端定義的規範。
+# 🚀 Synchro
+**Zero-Hallucination Fullstack Stack · 零幻覺全端架構**
+這是一個極致追求型別安全 (Type Safety) 的 Web 架構，專為 Cursor / Claude / Copilot 等 AI 工具設計。透過單一真相來源 (Single Source of Truth)，確保 AI 在生成前端代碼時，絕對無法脫離後端定義的規範，從根本杜絕 AI 代碼幻覺與前後端不一致。
+
+### 核心哲學 Core Principles
+- **Single Source of Truth**：Schema 與 API 型別全域共享，無同步成本
+- **100% Type Safety**：API 路徑、請求參數、返回結構全程型別約束
+- **AI-First by Design**：架構本身強制 AI 遵守規範，杜絕幻覺與隨機生成
+- **Zero Boilerplate**：Hono RPC + TanStack Query 一氣呵成，少寫 50% 膠水碼
 
 ## 🛠 Tech Stack
 * **Runtime:** Bun (極速、內建套件管理)

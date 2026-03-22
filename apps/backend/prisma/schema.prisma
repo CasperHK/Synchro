@@ -11,5 +11,6 @@ model Post {
   id        Int      @id @default(autoincrement())
   title     String
   body      String
+  status    String   @default("published")
   createdAt DateTime @default(now())
 }

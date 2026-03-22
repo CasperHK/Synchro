@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { serveStatic } from 'hono/bun'
 import postsRouter from './routes/posts'
+import { db } from './lib/prisma'
 
 const app = new Hono()
 
@@ -16,7 +17,16 @@ app.use(
 )
 
 // ── API routes ─────────────────────────────────────────────────────────────
-const routes = app.route('/api/posts', postsRouter)
+const routes = app
+  .route('/api/posts', postsRouter)
+  .get('/api/health', async (c) => {
+    try {
+      await db.$queryRaw`SELECT 1`
+      return c.json({ ok: true, db: 'connected' })
+    } catch {
+      return c.json({ ok: false, db: 'disconnected' }, 503)
+    }
+  })
 
 // ── Static frontend in production ──────────────────────────────────────────
 if (process.env.NODE_ENV === 'production') {
