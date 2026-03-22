@@ -6,3 +6,4 @@ dist/
 generated/
 *.lock
 !bun.lock
+*.tsbuildinfo
