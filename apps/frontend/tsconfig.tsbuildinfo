@@ -1,1 +1,0 @@
-{"root":["./react-router.config.ts","./vite.config.ts","./app/routes.ts","./app/lib/api.ts","./app/lib/date.ts","./app/root.tsx","./app/components/ConfirmDeleteDialog.tsx","./app/routes/home.tsx","./app/routes/posts.$id.edit.tsx","./app/routes/posts.$id.tsx","./app/routes/posts.new.tsx"],"errors":true,"version":"5.9.3"}
