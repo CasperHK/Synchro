@@ -2,12 +2,12 @@
 這是一個極致追求型別安全 (Type Safety) 的 Web 架構，專為 Cursor / Claude / Copilot 等 AI 工具設計。透過單一真相來源 (Single Source of Truth)，確保 AI 在生成前端代碼時，絕對無法脫離後端定義的規範。
 
 ## 🛠 Tech Stack
-* Runtime: Bun (極速、內建套件管理)
-* Frontend: React Router v7 (Remix 模式) + TanStack Query
-* Backend: Hono (輕量、支援 RPC 模式)
-* Database: PostgreSQL + Prisma ORM
-* Validation: Zod (共享驗證邏輯)
-* Infrastructure: Docker (Single Container Monolith)
+* **Runtime:** Bun (極速、內建套件管理)
+* **Frontend:** React Router v7 (Remix 模式) + TanStack Query
+* **Backend:** Hono (輕量、支援 RPC 模式)
+* **Database:** PostgreSQL + Prisma ORM
+* **Validation:** Zod (共享驗證邏輯)
+* **Infrastructure:** Docker (Single Container Monolith)
 
 ## 📂 Project Structure
 ```text
