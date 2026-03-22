@@ -1,21 +1,4 @@
 services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: synchro
-      POSTGRES_PASSWORD: synchro
-      POSTGRES_DB: synchro
-    ports:
-      - '5432:5432'
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U synchro']
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   app:
     build:
       context: ..
@@ -24,9 +7,9 @@ services:
     env_file: .env.uat
     ports:
       - '3000:3000'
-    depends_on:
-      db:
-        condition: service_healthy
+    volumes:
+      # Persist the SQLite database file across container restarts
+      - sqlite_data:/app/apps/backend/prisma
 
 volumes:
-  pg_data:
+  sqlite_data:
