@@ -4,14 +4,39 @@ import { logger } from 'hono/logger'
 import { serveStatic } from 'hono/bun'
 import postsRouter from './routes/posts'
 import { db } from './lib/prisma'
+import { getPrismaErrorCode, getPrismaFriendlyMessage } from './lib/prisma-error'
 
 const app = new Hono()
+
+app.onError((error, c) => {
+  const prismaCode = getPrismaErrorCode(error)
+
+  if (prismaCode) {
+    if (prismaCode === 'P6001') {
+      console.error('[Prisma:P6001] Prisma client/runtime mismatch. Regenerate client and restart dev server.')
+    } else {
+      console.error(`[Prisma:${prismaCode}]`, error)
+    }
+
+    return c.json(
+      {
+        ok: false,
+        code: prismaCode,
+        error: getPrismaFriendlyMessage(prismaCode),
+      },
+      500
+    )
+  }
+
+  console.error('[UnhandledError]', error)
+  return c.json({ ok: false, error: 'Internal server error' }, 500)
+})
 
 app.use('*', logger())
 app.use(
   '/api/*',
   cors({
-    origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL ?? 'http://127.0.0.1:5173',
     allowMethods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
   })
 )
