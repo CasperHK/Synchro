@@ -26,13 +26,16 @@
 ```
 
 ## 🤖 Why this is AI-Friendly?
-* **Hono RPC:** 
+* **Hono RPC:**
+
   後端路由直接導出 AppType。AI 在前端使用 hc<AppType> 時，會獲得 100% 的代碼補全，路徑、Method、Payload 欄位只要寫錯，編譯直接報錯。
 
 * **Shared Zod Schemas:**
+
   AI 修改 packages/shared 中的 Schema 後，前後端驗證會同步更新。AI 寫前端 Form 時必須符合後端資料結構。
   
 * **Single Language:**
+
   全環境 TypeScript，AI 不需要切換 Java/PHP/JS 邏輯，減少上下文斷層。
 
 ## 🚀 Getting Started
