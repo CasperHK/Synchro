@@ -1,6 +1,7 @@
 import {
   isRouteErrorResponse,
   Outlet,
+  Scripts,
 } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -22,6 +23,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Scripts />
       </body>
     </html>
   )

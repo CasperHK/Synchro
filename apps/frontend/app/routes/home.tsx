@@ -10,6 +10,7 @@ import { Link } from 'react-router'
 import { useState, useTransition } from 'react'
 import type { Post } from '@synchro/shared'
 import { client } from '~/lib/api'
+import { ConfirmDeleteDialog } from '~/components/ConfirmDeleteDialog'
 import { formatUtcDateTime } from '~/lib/date'
 import { StatusBadge } from './posts.$id'
 import type { Route } from './+types/home'
@@ -47,6 +48,8 @@ function PostList() {
   const qc = useQueryClient()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [postPendingDelete, setPostPendingDelete] = useState<{ id: number; title: string } | null>(null)
   const [, startTransition] = useTransition()
 
   // Debounce search via React's low-priority startTransition
@@ -64,10 +67,26 @@ function PostList() {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       const res = await client.api.posts[':id'].$delete({ param: { id: String(id) } })
-      if (!res.ok) throw new Error('Delete failed')
+      if (!res.ok) {
+        let message = `Delete failed (status ${res.status})`
+        try {
+          const contentType = res.headers.get('content-type') ?? ''
+          if (contentType.includes('application/json')) {
+            const payload = await res.json() as { error?: string }
+            if (payload.error) message = payload.error
+          } else {
+            const text = await res.text()
+            if (text) message = text
+          }
+        } catch {
+          // Keep fallback message when response parsing fails.
+        }
+        throw new Error(message)
+      }
     },
     // Optimistic update: remove card instantly, roll back on error
     onMutate: async (id) => {
+      setDeleteError(null)
       await qc.cancelQueries({ queryKey: ['posts'] })
       const previous = qc.getQueriesData<Post[]>({ queryKey: ['posts'] })
       qc.setQueriesData<Post[]>({ queryKey: ['posts'] }, (old) =>
@@ -75,13 +94,28 @@ function PostList() {
       )
       return { previous }
     },
-    onError: (_err, _id, ctx) => {
+    onError: (err, _id, ctx) => {
+      setDeleteError(err instanceof Error ? err.message : 'Delete failed')
       if (ctx?.previous) {
         for (const [key, data] of ctx.previous) qc.setQueryData(key, data)
       }
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ['posts'] }),
   })
+
+  async function handleDelete(event: React.MouseEvent<HTMLButtonElement>, id: number) {
+    event.preventDefault()
+    event.stopPropagation()
+    const post = posts.find((p) => p.id === id)
+    if (!post) return
+    setPostPendingDelete({ id: post.id, title: post.title })
+  }
+
+  async function confirmDelete() {
+    if (!postPendingDelete) return
+    await deleteMutation.mutateAsync(postPendingDelete.id)
+    setPostPendingDelete(null)
+  }
 
   return (
     <main style={{ maxWidth: 680, margin: '0 auto', padding: '2rem' }}>
@@ -92,6 +126,7 @@ function PostList() {
         <h1 style={{ margin: 0 }}>📝 Synchro Blog</h1>
         <Link to="/posts/new">
           <button
+            type="button"
             style={{
               background: '#2563eb',
               color: '#fff',
@@ -138,6 +173,21 @@ function PostList() {
           <option value="draft">Draft</option>
         </select>
       </div>
+
+      {deleteError && (
+        <p
+          style={{
+            color: '#b91c1c',
+            background: '#fee2e2',
+            border: '1px solid #fca5a5',
+            borderRadius: 8,
+            padding: '0.625rem 0.75rem',
+            marginBottom: '1rem',
+          }}
+        >
+          {deleteError}
+        </p>
+      )}
 
       {/* Content */}
       {isLoading ? (
@@ -212,6 +262,7 @@ function PostList() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignSelf: 'flex-start' }}>
                   <Link to={`/posts/${post.id}/edit`}>
                     <button
+                      type="button"
                       style={{
                         background: 'none',
                         border: '1px solid #d1d5db',
@@ -226,7 +277,8 @@ function PostList() {
                     </button>
                   </Link>
                   <button
-                    onClick={() => deleteMutation.mutate(post.id)}
+                    type="button"
+                    onClick={(e) => void handleDelete(e, post.id)}
                     disabled={deleteMutation.isPending}
                     style={{
                       background: 'none',
@@ -238,7 +290,7 @@ function PostList() {
                       cursor: 'pointer',
                     }}
                   >
-                    Delete
+                    {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
@@ -246,6 +298,17 @@ function PostList() {
           ))}
         </ul>
       )}
+
+      <ConfirmDeleteDialog
+        open={Boolean(postPendingDelete)}
+        title={postPendingDelete?.title}
+        pending={deleteMutation.isPending}
+        onCancel={() => {
+          if (deleteMutation.isPending) return
+          setPostPendingDelete(null)
+        }}
+        onConfirm={confirmDelete}
+      />
     </main>
   )
 }
