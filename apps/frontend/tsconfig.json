@@ -1,6 +1,10 @@
 {
   "include": ["**/*.ts", "**/*.tsx", ".react-router/types/**/*"],
   "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["node", "vite/client"],
     "isolatedModules": true,
@@ -16,5 +20,9 @@
     "paths": {
       "~/*": ["./app/*"]
     }
-  }
+  },
+  "references": [
+    { "path": "../backend" },
+    { "path": "../../packages/shared" }
+  ]
 }
